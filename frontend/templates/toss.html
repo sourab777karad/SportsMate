@@ -1,13 +1,78 @@
-<form method="POST">
-    <label>Select Toss Winner:</label>
-    <select name="toss_winner">
-        <option value="{{ match_data.team1 }}">{{ match_data.team1 }}</option>
-        <option value="{{ match_data.team2 }}">{{ match_data.team2 }}</option>
-    </select>
-    <label>Batting First:</label>
-    <select name="bat_first">
-        <option value="{{ match_data.team1 }}">{{ match_data.team1 }}</option>
-        <option value="{{ match_data.team2 }}">{{ match_data.team2 }}</option>
-    </select>
-    <button type="submit">Proceed to Match</button>
-</form>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coin Toss</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <h1>Coin Toss</h1>
+
+    <!-- Toss container to position team names and coin side by side -->
+    <div class="toss-container">
+        <!-- Team 1 name on the left -->
+        <div class="team-name">{{ match_data['team1'] }}</div>
+
+        <!-- Coin toss container -->
+        <div id="toss-wheel">
+            <!-- Coin element -->
+            <div class="coin" id="coin">
+                <span id="coin-text">Flip Me!</span> <!-- Initially empty, will show team name after spin -->
+            </div>
+        </div>
+
+        <!-- Team 2 name on the right -->
+        <div class="team-name">{{ match_data['team2'] }}</div>
+    </div>
+
+    <!-- Result of the toss (initially hidden) -->
+    <div class="result" id="result" style="display: none;">
+        <h2 id="toss-result"></h2>
+    </div>
+
+    <!-- Spin/Stop button -->
+    <button class="proceed-btn" id="spin-btn">Start Spin</button>
+
+    <!-- Start Match button (hidden initially) -->
+    <form action="{{ url_for('match_play') }}" method="POST" id="match-form" style="display: none;">
+        <button type="submit" class="proceed-btn">Start Match</button>
+    </form>
+
+    <script>
+        let isSpinning = false;
+        const coin = document.getElementById('coin');
+        const coinText = document.getElementById('coin-text');
+        const spinButton = document.getElementById('spin-btn');
+        const matchForm = document.getElementById('match-form');
+        const resultDiv = document.getElementById('result');
+        const tossResultText = document.getElementById('toss-result');
+
+        // Handle Start Spin/Stop Spin
+        spinButton.onclick = function() {
+            if (!isSpinning) {
+                // Start spinning the coin
+                coin.classList.add('spinning'); // Add 'spinning' class to trigger animation
+                coinText.innerText = ""; // Empty text while spinning
+                spinButton.innerText = "Stop Spin";
+                isSpinning = true;
+                tossResultText.innerText = ""; // Clear the result text
+                resultDiv.style.display = "none"; // Hide the result section while spinning
+            } else {
+                // Stop the spin and display the result
+                coin.classList.remove('spinning'); // Remove 'spinning' class to stop the animation
+
+                // Randomly choose the winner team
+                const winner = Math.random() > 0.5 ? "{{ match_data['team1'] }}" : "{{ match_data['team2'] }}";
+                coinText.innerText = winner; // Set the coin text to the winner team
+                tossResultText.innerText = `${winner} won the toss!`; // Update the result message
+                resultDiv.style.display = "block"; // Show the result section
+                spinButton.style.display = "none"; // Hide the spin button after toss result
+                matchForm.style.display = "block"; // Show the start match button
+            }
+        };
+    </script>
+
+</body>
+</html>

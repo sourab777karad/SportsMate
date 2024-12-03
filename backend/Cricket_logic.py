@@ -1,5 +1,6 @@
 # cricket_logic.py
 
+
 # Global match data structure
 match_data = {
     "team1": "",
