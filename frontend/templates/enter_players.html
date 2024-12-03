@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enter Players</title>
+</head>
+<body>
+    <h1>Enter Players</h1>
+
+    <form action="/enter_players" method="POST">
+        <!-- Team 1 Players -->
+        <h2>Team 1: {{ match_data['team1'] }}</h2>
+        {% for i in range(match_data['total_players']) %}
+            <label for="team1_player{{ i+1 }}">Player {{ i+1 }}: </label>
+            <input type="text" id="team1_player{{ i+1 }}" name="team1_player{{ i+1 }}" required><br>
+        {% endfor %}
+        <br>
+
+        <!-- Team 2 Players -->
+        <h2>Team 2: {{ match_data['team2'] }}</h2>
+        {% for i in range(match_data['total_players']) %}
+            <label for="team2_player{{ i+1 }}">Player {{ i+1 }}: </label>
+            <input type="text" id="team2_player{{ i+1 }}" name="team2_player{{ i+1 }}" required><br>
+        {% endfor %}
+        <br>
+
+        <!-- Submit Button -->
+        <button type="submit">Submit Players</button>
+    </form>
+
+    {% if match_data['team1'] and match_data['team2'] %}
+        <h3>Current Players:</h3>
+        <h4>Team 1</h4>
+        <ul>
+            {% for i in range(match_data['total_players']) %}
+                <li>{{ match_data.get('team1_player' + (i+1)|string, '') }}</li>
+            {% endfor %}
+        </ul>
+
+        <h4>Team 2</h4>
+        <ul>
+            {% for i in range(match_data['total_players']) %}
+                <li>{{ match_data.get('team2_player' + (i+1)|string, '') }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+</body>
+</html>

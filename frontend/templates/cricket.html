@@ -3,13 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <title>Cricket</title>
+    <title>Cricket Match Setup</title>
 </head>
 <body>
-    <h1>Cricket Match</h1>
-    <p>Enter the details of the match here.</p>
-    <!-- Add more content here as needed -->
-    <a href="/">Go Back to Home</a>
+    <h1>Cricket Match Setup</h1>
+    <form method="POST">
+        <div>
+            <label for="team1">Team 1 Name:</label>
+            <input type="text" id="team1" name="team1" required>
+        </div>
+        <div>
+            <label for="team2">Team 2 Name:</label>
+            <input type="text" id="team2" name="team2" required>
+        </div>
+        <div>
+            <label for="overs">Total Overs:</label>
+            <input type="number" id="overs" name="overs" required>
+        </div>
+        <div>
+            <label for="total_players">Total Players per Team:</label>
+            <input type="number" id="total_players" name="total_players" required>
+        </div>
+        <button type="submit">Start Match</button>
+    </form>
 </body>
 </html>

@@ -1,0 +1,13 @@
+<form method="POST">
+    <label>Select Toss Winner:</label>
+    <select name="toss_winner">
+        <option value="{{ match_data.team1 }}">{{ match_data.team1 }}</option>
+        <option value="{{ match_data.team2 }}">{{ match_data.team2 }}</option>
+    </select>
+    <label>Batting First:</label>
+    <select name="bat_first">
+        <option value="{{ match_data.team1 }}">{{ match_data.team1 }}</option>
+        <option value="{{ match_data.team2 }}">{{ match_data.team2 }}</option>
+    </select>
+    <button type="submit">Proceed to Match</button>
+</form>

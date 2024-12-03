@@ -1,15 +1,22 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <title>Football</title>
 </head>
 <body>
-    <h1>Football Match</h1>
-    <p>Enter the details of the match here.</p>
-    <!-- Add more content here as needed -->
-    <a href="/">Go Back to Home</a>
+    <h1>Football Match Details</h1>
+    <form>
+        <label for="team1">Team 1:</label>
+        <input type="text" id="team1" name="team1"><br>
+        
+        <label for="team2">Team 2:</label>
+        <input type="text" id="team2" name="team2"><br>
+        
+        <label for="players">Players per Team:</label>
+        <input type="number" id="players" name="players"><br>
+        
+        <button type="submit">Start Match</button>
+    </form>
 </body>
 </html>
+

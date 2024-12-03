@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cricket Match</title>
+</head>
+<body>
+    <h1>Cricket Match Tracker</h1>
+    <form method="POST" action="/start_match">
+        <h2>Pre-Match Setup</h2>
+        <label>Total Players Per Team:</label>
+        <input type="number" name="total_players" min="1" required>
+        <button type="submit">Start Match</button>
+    </form>
+
+    {% if data %}
+    <h2>Match in Progress</h2>
+    <p><b>Team 1:</b> {{ data.team1 }}</p>
+    <p><b>Team 2:</b> {{ data.team2 }}</p>
+    <p><b>Overs:</b> {{ data.overs }}</p>
+
+    <form method="POST" action="/update_match">
+        <h3>Opening Players</h3>
+        <label>Batter 1:</label>
+        <input type="text" name="batter1" value="{{ data.batter1 }}" required>
+        <label>Batter 2:</label>
+        <input type="text" name="batter2" value="{{ data.batter2 }}" required>
+        <label>Bowler:</label>
+        <input type="text" name="bowler" value="{{ data.bowler }}" required>
+        <button type="submit">Update</button>
+    </form>
+
+    <h3>Batters</h3>
+    <ul>
+        {% for batter in data.batters %}
+        <li>
+            {{ batter.name }}: {{ batter.runs }} runs
+            <button onclick="markOut('{{ batter.name }}')">Out</button>
+        </li>
+        {% endfor %}
+    </ul>
+
+    <h3>New Batter</h3>
+    <form method="POST" action="/add_batter">
+        <label>Batter Name:</label>
+        <input type="text" name="new_batter" required>
+        <button type="submit">Add Batter</button>
+    </form>
+
+    <h3>Bowler</h3>
+    <form method="POST" action="/update_bowler">
+        <label>Bowler Name:</label>
+        <input type="text" name="bowler_name" required>
+        <button type="submit">Update Bowler</button>
+    </form>
+    {% endif %}
+</body>
+</html>

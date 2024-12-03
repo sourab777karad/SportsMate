@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Enter Players</title>
+  </head>
+  <body>
+    <h1>Enter Players for {{ match_data.team1 }} and {{ match_data.team2 }}</h1>
+
+    <h2>Team 1 Players</h2>
+    <form action="{{ url_for('enter_players') }}" method="POST">
+      {% for i in range(1, match_data.total_players + 1) %}
+      <label for="team1_player{{ i }}">Player {{ i }}:</label>
+      <input type="text" name="team1_player{{ i }}" required /><br />
+      {% endfor %}
+
+      <h2>Team 2 Players</h2>
+      {% for i in range(1, match_data.total_players + 1) %}
+      <label for="team2_player{{ i }}">Player {{ i }}:</label>
+      <input type="text" name="team2_player{{ i }}" required /><br />
+      {% endfor %}
+
+      <button type="submit">Start Match</button>
+    </form>
+  </body>
+</html>
