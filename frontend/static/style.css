@@ -3,112 +3,73 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f5f5f5;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    text-align: center; /* Ensure everything is centered */
+    background-color: #f5f5f5;
 }
 
-/* Heading styles */
-h1 {
-    color: #333;
-    margin-bottom: 30px;
-}
-
-/* Button Styling */
-button {
-    padding: 10px 20px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
-}
-
-button:hover {
-    background-color: #45a049;
-}
-
-/* Toss container to position team names and coin side by side */
-.toss-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 50px;
-    margin-bottom: 20px;
-    width: 100%; /* Ensure full width */
+.container {
     text-align: center;
 }
 
-/* Team name styling */
+/* Heading Styles */
+h1 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+/* Toss Container */
+.toss-container {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    gap: 50px;
+}
+
+/* Team Names */
 .team-name {
     font-size: 24px;
     font-weight: bold;
-    padding: 20px;
-    flex: 1;
 }
 
-/* Coin toss container */
+/* Coin Styles */
 #toss-wheel {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    height: 200px;
-    width: 200px;
-    margin: 0 auto; /* Center the coin */
+    text-align: center;
 }
 
-/* Coin styling */
 .coin {
     width: 150px;
     height: 150px;
-    border-radius: 50%;
     background-color: gold;
+    border-radius: 50%;
     display: flex;
-    align-items: center;
     justify-content: center;
-    font-size: 25px;
+    align-items: center;
+    font-size: 20px;
     font-weight: bold;
-    color: white;
-    margin: 0 auto; /* Ensure coin is centered */
+    color: black;
+    border: 2px solid #333;
+    margin-bottom: 20px;
     transition: transform 2s ease-in-out;
 }
 
-/* Spin animation */
-@keyframes spin {
-    0% { transform: rotateY(0); }
-    50% { transform: rotateY(180deg); }
-    100% { transform: rotateY(360deg); }
-}
-
-/* Add spin animation */
-.coin.spinning {
-    animation: spin 3s infinite;
-}
-
-/* Result styling after toss */
+/* Result Section */
 .result {
     margin-top: 20px;
-    font-size: 24px;
 }
 
-/* Styling for the Spin/Stop button */
+/* Button Styles */
 .proceed-btn {
     background-color: #4CAF50;
     color: white;
-    padding: 15px 32px;
-    font-size: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
     border: none;
     cursor: pointer;
-    margin: 20px auto;
-    display: block;
 }
 
-/* Hover effect for the button */
 .proceed-btn:hover {
     background-color: #45a049;
 }

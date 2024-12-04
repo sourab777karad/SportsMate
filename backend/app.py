@@ -98,12 +98,15 @@ def start_toss():
 @app.route('/toss', methods=['GET', 'POST'])
 def toss():
     if request.method == 'POST':
-        # Perform toss logic and render toss result
+        # Perform toss logic
         team1 = match_data['team1']
         team2 = match_data['team2']
         toss_result = random.choice([team1, team2])
         winner = toss_result
+        match_data['winner'] = winner  # Store the winner in match_data
         return render_template('toss.html', match_data=match_data, toss_result=toss_result, winner=winner)
+    
+    # For GET method, render toss page with match_data
     return render_template('toss.html', match_data=match_data)
 
 @app.route('/team_players')
@@ -114,6 +117,10 @@ def team_players():
 def match_play():
     # Your function code
     return render_template('match_play.html')
+
+@app.route('/start_match', methods=['POST'])
+def start_match():
+    return render_template('match_play.html', match_data=match_data)
 
 if __name__ == '__main__':
     app.run(debug=True)
