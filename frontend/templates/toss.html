@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Coin Toss</title>
     <style>
-        /* General Body Styles */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -21,33 +20,6 @@
             text-align: center;
         }
 
-        /* Heading Styles */
-        h1 {
-            color: #2c3e50;
-            margin-bottom: 20px;
-        }
-
-        /* Toss Container */
-        .toss-container {
-            display: flex;
-            justify-content: space-evenly;
-            align-items: center;
-            gap: 50px;
-        }
-
-        /* Team Names */
-        .team-name {
-            font-size: 24px;
-            font-weight: bold;
-        }
-
-        /* Coin Styles */
-        #toss-wheel {
-            text-align: center;
-            position: relative;
-        }
-
-        /* Coin Style */
         .coin {
             width: 150px;
             height: 150px;
@@ -61,33 +33,15 @@
             color: black;
             border: 2px solid #333;
             margin-bottom: 20px;
-            position: relative;
-            transition: transform 2s ease-in-out;
+            animation: none;
         }
 
-        /* Team Names inside the coin */
-        .team-left, .team-right {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 16px;
-            font-weight: bold;
+        @keyframes spin {
+            0% { transform: rotateY(0); }
+            50% { transform: rotateY(180deg); }
+            100% { transform: rotateY(360deg); }
         }
 
-        .team-left {
-            left: -50px;  /* Adjust this to place it correctly on the left */
-        }
-
-        .team-right {
-            right: -50px; /* Adjust this to place it correctly on the right */
-        }
-
-        /* Result Section */
-        .result {
-            margin-top: 20px;
-        }
-
-        /* Button Styles */
         .proceed-btn {
             background-color: #4CAF50;
             color: white;
@@ -100,75 +54,67 @@
         .proceed-btn:hover {
             background-color: #45a049;
         }
+
+        .team-name {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .result {
+            margin-top: 20px;
+            font-size: 18px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Coin Toss</h1>
-        <div class="toss-container">
-            <!-- Team Names on both sides of the coin -->
-            <div class="team-name" id="team1">{{ match_data['team1'] }}</div>
 
-            <div id="toss-wheel">
-                <div id="coin" class="coin">
-                    <!-- This is the coin itself where the spin animation happens -->
-                    Flip Me
-                </div>
-                <button id="spin-btn" class="proceed-btn">Spin</button>
-            </div>
+        <!-- Team Names -->
+        <div class="team-name">{{ match_data['team1'] }} vs {{ match_data['team2'] }}</div>
 
-            <div class="team-name" id="team2">{{ match_data['team2'] }}</div>
-        </div>
+        <!-- Coin Toss Section -->
+        <div id="coin" class="coin">Flip Me</div>
+        <button id="spin-btn" class="proceed-btn">Spin</button>
 
-        <!-- Result Section -->
+        <!-- Toss Result -->
         <div id="result" class="result" style="display: none;">
-            <h2 id="result-text">{{ winner }} won the toss!</h2>
-            <form action="{{ url_for('match_play') }}" method="POST">
+            <p id="result-text">{{ match_data['winner'] }}</p>
+            <form action="/start_match" method="POST">
                 <button type="submit" class="proceed-btn">Start Match</button>
             </form>
         </div>
     </div>
 
     <script>
-        let isSpinning = false;
         const coin = document.getElementById("coin");
         const spinButton = document.getElementById("spin-btn");
         const resultContainer = document.getElementById("result");
         const resultText = document.getElementById("result-text");
 
-        // Spin/Stop Logic
+        let isSpinning = false;
+
         spinButton.addEventListener("click", () => {
             if (!isSpinning) {
-                // Start Spinning
+                // Start spinning
                 coin.style.animation = "spin 2s infinite linear";
                 spinButton.textContent = "Stop";
+                resultContainer.style.display = "none";
                 isSpinning = true;
-                resultContainer.style.display = "none"; // Hide result during spin
             } else {
-                // Stop Spinning
+                // Stop spinning
                 coin.style.animation = "none";
-
-                // Randomly Decide Winner
-                const team1 = "{{ match_data['team1'] }}";
-                const team2 = "{{ match_data['team2'] }}";
-                const winner = Math.random() < 0.5 ? team1 : team2;
-
-                // Show Result
-                resultText.textContent = `${winner} won the toss!`;
-                resultContainer.style.display = "block";
                 spinButton.textContent = "Spin Again";
+                resultContainer.style.display = "block";
+
+                // Show winner
+                const winner = "{{ match_data['winner'] }}";
+                resultText.textContent = `${winner} won the toss!`;
                 isSpinning = false;
             }
         });
     </script>
-
-    <style>
-        /* Coin spin animation */
-        @keyframes spin {
-            0% { transform: rotateY(0); }
-            50% { transform: rotateY(180deg); }
-            100% { transform: rotateY(360deg); }
-        }
-    </style>
 </body>
 </html>
+    
