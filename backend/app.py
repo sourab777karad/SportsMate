@@ -5,8 +5,6 @@ from Cricket_logic import start_match, enter_players, toss_winner, update_batter
 # Initialize the Flask app
 app = Flask(__name__, template_folder='../frontend/templates')
 
-app.secret_key = 'b8c9f4e5a6d7e8f9c0b1a2d3e4f5g6h7'
-
 
 # Define a route for the homepage
 @app.route('/')
