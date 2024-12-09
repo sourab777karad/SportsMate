@@ -7,18 +7,9 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            text-align: center;
             background-color: #f5f5f5;
             padding: 20px;
-            margin: 0;
-        }
-
-        h1, h2 {
-            text-align: center;
-            color: #2c3e50;
-        }
-
-        .team {
-            margin-bottom: 20px;
         }
 
         .player-list {
@@ -27,15 +18,22 @@
         }
 
         .player-list li {
-            padding: 5px;
-            background: #fff;
-            margin-bottom: 5px;
-            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 5px;
+            background-color: #eee;
+            border: 1px solid #ccc;
+            cursor: pointer;
         }
 
-        .start-btn {
-            display: block;
-            margin: 0 auto;
+        .player-list li:hover {
+            background-color: #ddd;
+        }
+
+        .button-container {
+            margin-top: 20px;
+        }
+
+        .proceed-btn {
             padding: 10px 20px;
             background-color: #4CAF50;
             color: white;
@@ -43,27 +41,71 @@
             cursor: pointer;
         }
 
-        .start-btn:hover {
+        .proceed-btn:hover {
             background-color: #45a049;
+        }
+
+        .selected-batters {
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
     <h1>Match Play</h1>
-    <h2>Team 1: {{ match_data['team1'] }}</h2>
+    <h2>Batting Team: 
+        {% if match_data['toss_decision'] == 'bat' %}
+            {{ match_data['team1'] }}
+        {% else %}
+            {{ match_data['team2'] }}
+        {% endif %}
+    </h2>
+
+    <h3>Current Batters:</h3>
     <ul class="player-list">
-        {% for i in range(match_data['total_players']) %}
-        <li>{{ match_data.get('team1_player' + (i + 1)|string, 'Player ' + (i + 1)|string) }}</li>
+        {% for batter in match_data['current_batters'] %}
+        <li>
+            {{ batter }}
+            <form action="/match_play" method="POST" style="display: inline;">
+                <input type="hidden" name="out_batter" value="{{ batter }}">
+                <button type="submit" class="proceed-btn">Out</button>
+            </form>
+        </li>
         {% endfor %}
     </ul>
 
-    <h2>Team 2: {{ match_data['team2'] }}</h2>
-    <ul class="player-list">
-        {% for i in range(match_data['total_players']) %}
-        <li>{{ match_data.get('team2_player' + (i + 1)|string, 'Player ' + (i + 1)|string) }}</li>
-        {% endfor %}
-    </ul>
+    <h3>Available Players to Bat:</h3>
+    <div class="button-container">
+        {% if match_data['toss_decision'] == 'bat' %}
+            {% for player in match_data['team1_players'] %}
+                {% if player not in match_data['current_batters'] and player not in match_data['out_batters'] %}
+                <button class="proceed-btn" onclick="selectBatter('{{ player }}')">{{ player }}</button>
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            {% for player in match_data['team2_players'] %}
+                {% if player not in match_data['current_batters'] and player not in match_data['out_batters'] %}
+                <button class="proceed-btn" onclick="selectBatter('{{ player }}')">{{ player }}</button>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </div>
 
-    <button class="start-btn">Start the Game!</button>
+    <script>
+        // Function to handle batter selection
+        function selectBatter(player) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/match_play';
+
+            const batterInput = document.createElement('input');
+            batterInput.type = 'hidden';
+            batterInput.name = 'new_batter';
+            batterInput.value = player;
+            form.appendChild(batterInput);
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+    </script>
 </body>
 </html>

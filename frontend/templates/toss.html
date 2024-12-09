@@ -38,6 +38,7 @@
             color: white;
             border: none;
             cursor: pointer;
+            margin: 10px;
         }
 
         .proceed-btn:hover {
@@ -45,6 +46,10 @@
         }
 
         .result {
+            margin-top: 20px;
+        }
+
+        .choice-buttons {
             margin-top: 20px;
         }
     </style>
@@ -62,9 +67,18 @@
     <!-- Toss Result -->
     <div id="result" class="result" style="display: none;">
         <h2 id="result-text"></h2>
-        <form action="/start_match" method="POST">
-            <button type="submit" class="proceed-btn">Start Match</button>
-        </form>
+
+        <!-- Bat or Bowl Buttons -->
+        <div class="choice-buttons">
+            <form action="/save_toss_decision" method="POST">
+                <input type="hidden" name="decision" value="bat">
+                <button type="submit" class="proceed-btn">Bat</button>
+            </form>
+            <form action="/save_toss_decision" method="POST">
+                <input type="hidden" name="decision" value="bowl">
+                <button type="submit" class="proceed-btn">Bowl</button>
+            </form>
+        </div>
     </div>
 
     <script>
@@ -94,7 +108,7 @@
                 coin.textContent = winner; // Update coin text to winner
                 resultText.textContent = `${winner} won the toss!`;
                 resultDiv.style.display = "block"; // Show the result
-                spinButton.textContent = "Spin Again";
+                spinButton.style.display = "none"; // Hide the spin button
                 isSpinning = false;
             }
         });

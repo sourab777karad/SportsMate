@@ -138,7 +138,7 @@ def toss():
     # Render the toss page with the current match data
     return render_template('toss.html', match_data=match_data)
 
-@app.route('/start_match', methods=['POST'])
+@app.route('/start_match', methods=['GET', 'POST'])
 def start_match():
     if 'match_data' not in session:
         return "Error: Match data is missing!", 400
@@ -152,10 +152,57 @@ def team_players():
 
 @app.route('/match_play', methods=['GET', 'POST'])
 def match_play():
-    # Your function code
-    return render_template('match_play.html')
+    if 'match_data' not in session:
+        return "Error: Match data is missing!", 400
 
+    match_data = session['match_data']
 
+    # Initialize current batters and out batters if not set
+    if 'current_batters' not in match_data:
+        match_data['current_batters'] = []  # Current batters
+        match_data['out_batters'] = []  # Players who are out
+
+    # If players haven't been stored in the session, this could be the issue
+    if 'team1_players' not in match_data or 'team2_players' not in match_data:
+        # Add fallback for test purposes, or retrieve it from somewhere else
+        match_data['team1_players'] = ['Player 1', 'Player 2', 'Player 3', 'Player 4', 'Player 5']
+        match_data['team2_players'] = ['Player A', 'Player B', 'Player C', 'Player D', 'Player E']
+
+    # Handle POST logic for out and new batters
+    if request.method == 'POST':
+        dismissed_batter = request.form.get('out_batter')
+        new_batter = request.form.get('new_batter')
+
+        if dismissed_batter:
+            match_data['current_batters'].remove(dismissed_batter)
+            match_data['out_batters'].append(dismissed_batter)
+
+        if new_batter:
+            match_data['current_batters'].append(new_batter)
+
+        session['match_data'] = match_data  # Save updates to session
+
+    return render_template('match_play.html', match_data=match_data)
+
+@app.route('/save_toss_decision', methods=['POST'])
+def save_toss_decision():
+    if 'match_data' not in session:
+        return "Error: Match data is missing!", 400
+
+    match_data = session['match_data']
+    decision = request.form.get('decision')
+
+    if not decision:
+        return "Error: Invalid decision.", 400
+
+    # Save the toss decision
+    match_data['toss_decision'] = decision
+    session['match_data'] = match_data
+
+    print(f"DEBUG: {match_data['winner']} chose to {decision}.")  # Debugging
+
+    # Redirect to the match play page
+    return redirect(url_for('start_match'))
 
 if __name__ == '__main__':
     app.run(debug=True)
