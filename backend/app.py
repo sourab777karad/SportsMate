@@ -141,10 +141,42 @@ def toss():
 @app.route('/start_match', methods=['GET', 'POST'])
 def start_match():
     if 'match_data' not in session:
-        return "Error: Match data is missing!", 400
+        return redirect(url_for('cricket'))  # Redirect if match data is missing
 
     match_data = session['match_data']
-    return render_template('match_play.html', match_data=match_data)
+
+    if request.method == 'POST':
+        # Get selected batters and bowler from the form
+        batter1 = request.form.get('batter1')
+        batter2 = request.form.get('batter2')
+        bowler = request.form.get('bowler')
+
+        # Validate inputs
+        if not batter1 or not batter2 or not bowler:
+            return "Error: Please select two batters and one bowler.", 400
+        if batter1 == batter2 or batter1 == bowler or batter2 == bowler:
+            return "Error: Players must be unique.", 400
+
+        # Update match data
+        match_data['current_batters'] = [batter1, batter2]
+        match_data['current_bowler'] = bowler
+        match_data['strike_batter'] = batter1  # Batter facing the first delivery
+        session['match_data'] = match_data
+
+        # Redirect to the main match interface
+        return redirect(url_for('match_play'))
+
+    # Determine batting and bowling teams
+    batting_team = match_data['team1'] if match_data['toss_decision'] == 'bat' else match_data['team2']
+    bowling_team = match_data['team2'] if batting_team == match_data['team1'] else match_data['team1']
+
+    # Debugging: Check the players
+    batting_players = match_data['team1_players'] if batting_team == match_data['team1'] else match_data['team2_players']
+    bowling_players = match_data['team2_players'] if bowling_team == match_data['team2'] else match_data['team1_players']
+    print("DEBUG: Batting Players:", batting_players)
+    print("DEBUG: Bowling Players:", bowling_players)
+
+    return render_template('select_players.html', match_data=match_data, batting_players=batting_players, bowling_players=bowling_players)
 
 @app.route('/team_players')
 def team_players():

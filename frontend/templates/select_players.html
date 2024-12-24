@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Players</title>
+</head>
+<body>
+    <h1>Select Players</h1>
+    <form action="{{ url_for('start_match') }}" method="POST">
+        <h2>Batting Team: {{ match_data['team1'] if match_data['toss_decision'] == 'bat' else match_data['team2'] }}</h2>
+        <div>
+            {% for player in batting_players %}
+            <div>
+                <p>{{ player }}</p>
+                <input type="radio" name="batter1" value="{{ player }}" required> Batter 1
+                <input type="radio" name="batter2" value="{{ player }}" required> Batter 2
+            </div>
+            {% endfor %}
+        </div>
+
+        <h2>Bowling Team: {{ match_data['team2'] if match_data['toss_decision'] == 'bat' else match_data['team1'] }}</h2>
+        <div>
+            {% for player in bowling_players %}
+            <div>
+                <p>{{ player }}</p>
+                <input type="radio" name="bowler" value="{{ player }}" required> Select Bowler
+            </div>
+            {% endfor %}
+        </div>
+
+        <button type="submit">Start Match</button>
+    </form>
+</body>
+</html>
