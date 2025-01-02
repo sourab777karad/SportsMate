@@ -62,25 +62,28 @@ def update_bowler():
 
 @app.route('/submit_players', methods=['POST'])
 def submit_players():
-    # Fetching player names for Team 1
-    match_data["team1_players"] = [
-        request.form.get(f'team1_player{i}') for i in range(1, match_data["total_players"] + 1)
+    match_data = session.get('match_data', {})
+
+    # Fetch player names for Team 1
+    team1_players = [
+        request.form.get(f'team1_player{i}') for i in range(1, match_data.get("total_players", 0) + 1)
     ]
-    # Fetching player names for Team 2
-    match_data["team2_players"] = [
-        request.form.get(f'team2_player{i}') for i in range(1, match_data["total_players"] + 1)
+    # Fetch player names for Team 2
+    team2_players = [
+        request.form.get(f'team2_player{i}') for i in range(1, match_data.get("total_players", 0) + 1)
     ]
 
-    # Handle cases where fields might be left empty
-    match_data["team1_players"] = [p for p in match_data["team1_players"] if p]
-    match_data["team2_players"] = [p for p in match_data["team2_players"] if p]
+    # Store players in match_data
+    match_data['team1_players'] = team1_players
+    match_data['team2_players'] = team2_players
+    session['match_data'] = match_data
 
-    # Validate the input
-    if len(match_data["team1_players"]) != match_data["total_players"] or len(match_data["team2_players"]) != match_data["total_players"]:
-        return "Error: Please ensure all player names are filled.", 400
+    # Debugging: Check stored player data
+    print("DEBUG: Team 1 Players:", match_data['team1_players'])
+    print("DEBUG: Team 2 Players:", match_data['team2_players'])
 
-    # Proceed to toss page
-    return render_template('toss.html', match_data=match_data)
+    # Redirect to toss page
+    return redirect(url_for('toss'))
 
 @app.route('/start_toss', methods=['POST'])
 def start_toss():
@@ -96,16 +99,23 @@ def start_toss():
 
 @app.route('/setup_match', methods=['POST'])
 def setup_match():
+    # Debugging: Print form data
+    print("DEBUG: Form Data Received:", request.form)
+
     # Get team names and total players from the form
-    team1 = request.form.get('team1', '').strip()  # Get and clean input
+    team1 = request.form.get('team1', '').strip()
     team2 = request.form.get('team2', '').strip()
     total_players = int(request.form.get('total_players', 0))
+
+    # Debugging: Print extracted team names
+    print("DEBUG: Team 1:", team1)
+    print("DEBUG: Team 2:", team2)
 
     # Validate input
     if not team1 or not team2:
         return "Error: Team names cannot be empty.", 400
 
-    # Store in the session
+    # Store match data in the session
     session['match_data'] = {
         'team1': team1,
         'team2': team2,
@@ -120,22 +130,17 @@ def setup_match():
 
 @app.route('/toss', methods=['GET', 'POST'])
 def toss():
-    # Ensure match_data exists in the session
     if 'match_data' not in session:
-        return "Error: Match data not found. Please set up the match first.", 400
+        return redirect(url_for('setup_match'))
 
     match_data = session['match_data']
+    print("DEBUG: match_data in /toss:", match_data)  # Debugging
 
     if request.method == 'POST':
-        # Perform the toss
         match_data['winner'] = random.choice([match_data['team1'], match_data['team2']])
-        session['match_data'] = match_data  # Update session with the winner
-
-        print("DEBUG: Winner:", match_data['winner'])  # Debugging
-
+        session['match_data'] = match_data
         return render_template('toss.html', match_data=match_data)
 
-    # Render the toss page with the current match data
     return render_template('toss.html', match_data=match_data)
 
 @app.route('/start_match', methods=['GET', 'POST'])
@@ -219,21 +224,23 @@ def match_play():
 @app.route('/save_toss_decision', methods=['POST'])
 def save_toss_decision():
     if 'match_data' not in session:
-        return "Error: Match data is missing!", 400
+        return redirect(url_for('setup_match'))
 
     match_data = session['match_data']
-    decision = request.form.get('decision')
+    toss_decision = request.form.get('decision')
 
-    if not decision:
-        return "Error: Invalid decision.", 400
+    print("DEBUG: Toss Decision:", toss_decision)
+    print("DEBUG: match_data before processing toss decision:", match_data)
 
-    # Save the toss decision
-    match_data['toss_decision'] = decision
+    if toss_decision == 'bat':
+        match_data['batting_team'] = match_data['winner']
+        match_data['bowling_team'] = match_data['team2'] if match_data['winner'] == match_data['team1'] else match_data['team1']
+    else:
+        match_data['bowling_team'] = match_data['winner']
+        match_data['batting_team'] = match_data['team2'] if match_data['winner'] == match_data['team1'] else match_data['team1']
+
     session['match_data'] = match_data
 
-    print(f"DEBUG: {match_data['winner']} chose to {decision}.")  # Debugging
-
-    # Redirect to the match play page
     return redirect(url_for('start_match'))
 
 if __name__ == '__main__':

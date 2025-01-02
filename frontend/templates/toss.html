@@ -57,7 +57,7 @@
 <body>
     <h1>Coin Toss</h1>
     <div>
-        <p>{{ match_data['team1'] }} vs {{ match_data['team2'] }}</p>
+        <p>{{ match_data.get('team1', 'Team 1') }} vs {{ match_data.get('team2', 'Team 2') }}</p>
     </div>
 
     <!-- Coin Toss Section -->
