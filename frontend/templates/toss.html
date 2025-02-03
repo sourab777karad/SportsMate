@@ -1,117 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coin Toss</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #f5f5f5;
-            padding: 20px;
-        }
-
-        h1 {
-            margin-bottom: 20px;
-        }
-
-        .coin {
-            width: 150px;
-            height: 150px;
-            background-color: gold;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 20px;
-            font-weight: bold;
-            color: black;
-            border: 2px solid #333;
-            margin: 20px auto;
-            animation: none;
-        }
-
-        .proceed-btn {
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-            margin: 10px;
-        }
-
-        .proceed-btn:hover {
-            background-color: #45a049;
-        }
-
-        .result {
-            margin-top: 20px;
-        }
-
-        .choice-buttons {
-            margin-top: 20px;
-        }
-    </style>
+    <!-- ... (keep existing styles) ... -->
 </head>
 <body>
     <h1>Coin Toss</h1>
     <div>
-        <p>{{ match_data.get('team1', 'Team 1') }} vs {{ match_data.get('team2', 'Team 2') }}</p>
+        <p>{{ match_data['team1'] }} vs {{ match_data['team2'] }}</p>
     </div>
 
-    <!-- Coin Toss Section -->
-    <div id="coin" class="coin">{{ match_data['team1'] }}</div>
-    <button id="spin-btn" class="proceed-btn">Spin</button>
-
-    <!-- Toss Result -->
-    <div id="result" class="result" style="display: none;">
-        <h2 id="result-text"></h2>
-
-        <!-- Bat or Bowl Buttons -->
-        <div class="choice-buttons">
-            <form action="/save_toss_decision" method="POST">
-                <input type="hidden" name="decision" value="bat">
-                <button type="submit" class="proceed-btn">Bat</button>
-            </form>
-            <form action="/save_toss_decision" method="POST">
-                <input type="hidden" name="decision" value="bowl">
-                <button type="submit" class="proceed-btn">Bowl</button>
-            </form>
+    {% if not match_data.get('winner') %}
+        <form action="{{ url_for('toss') }}" method="POST">
+            <button type="submit" class="proceed-btn">Spin the Coin</button>
+        </form>
+    {% else %}
+        <div class="result">
+            <h2>{{ match_data['winner'] }} won the toss!</h2>
+            <div class="choice-buttons">
+                <form action="/save_toss_decision" method="POST">
+                    <input type="hidden" name="decision" value="bat">
+                    <button type="submit" class="proceed-btn">Bat</button>
+                </form>
+                <form action="/save_toss_decision" method="POST">
+                    <input type="hidden" name="decision" value="bowl">
+                    <button type="submit" class="proceed-btn">Bowl</button>
+                </form>
+            </div>
         </div>
-    </div>
-
-    <script>
-        const coin = document.getElementById("coin");
-        const spinButton = document.getElementById("spin-btn");
-        const resultDiv = document.getElementById("result");
-        const resultText = document.getElementById("result-text");
-
-        let isSpinning = false;
-
-        // Get team names dynamically from Flask
-        const team1 = "{{ match_data['team1'] }}";
-        const team2 = "{{ match_data['team2'] }}";
-        let winner = "";
-
-        spinButton.addEventListener("click", () => {
-            if (!isSpinning) {
-                // Start spinning
-                coin.style.animation = "spin 1s infinite linear";
-                spinButton.textContent = "Stop";
-                isSpinning = true;
-                resultDiv.style.display = "none"; // Hide the result while spinning
-            } else {
-                // Stop spinning
-                coin.style.animation = "none";
-                winner = Math.random() < 0.5 ? team1 : team2; // Randomly decide winner
-                coin.textContent = winner; // Update coin text to winner
-                resultText.textContent = `${winner} won the toss!`;
-                resultDiv.style.display = "block"; // Show the result
-                spinButton.style.display = "none"; // Hide the spin button
-                isSpinning = false;
-            }
-        });
-    </script>
+    {% endif %}
 </body>
 </html>

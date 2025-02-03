@@ -122,7 +122,7 @@ def setup_match():
         'total_players': total_players,
         'winner': ''
     }
-
+    session.modified = True 
     print("DEBUG: match_data stored in session:", session['match_data'])  # Debugging
 
     # Redirect to the toss page
@@ -133,13 +133,14 @@ def toss():
     if 'match_data' not in session:
         return redirect(url_for('setup_match'))
 
-    match_data = session['match_data']
-    print("DEBUG: match_data in /toss:", match_data)  # Debugging
+    match_data = session.get('match_data')
 
     if request.method == 'POST':
-        match_data['winner'] = random.choice([match_data['team1'], match_data['team2']])
+        # Generate the toss winner and save to session
+        winner = random.choice([match_data['team1'], match_data['team2']])
+        match_data['winner'] = winner
         session['match_data'] = match_data
-        return render_template('toss.html', match_data=match_data)
+        return redirect(url_for('toss'))  # Redirect to display result
 
     return render_template('toss.html', match_data=match_data)
 
@@ -227,8 +228,8 @@ def save_toss_decision():
         return redirect(url_for('setup_match'))
 
     match_data = session['match_data']
-    toss_decision = request.form.get('decision')
-
+    if 'winner' not in match_data:
+        return redirect(url_for('toss'))
     print("DEBUG: Toss Decision:", toss_decision)
     print("DEBUG: match_data before processing toss decision:", match_data)
 
